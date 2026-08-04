@@ -1,22 +1,23 @@
 from playwright.sync_api import sync_playwright
 
-def main():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+with sync_playwright() as p:
+    browser = p.chromium.launch(
+        headless=True,
+        args=[
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--disable-gpu"
+        ]
+    )
 
-        page = browser.new_page(viewport={"width": 1366, "height": 768})
+    page = browser.new_page()
 
-        page.goto(
-            "https://www.bedas.com.tr/elektrik-kesintisi-sorgulama",
-            wait_until="networkidle",
-            timeout=60000,
-        )
+    page.goto(
+        "https://www.bedas.com.tr/elektrik-kesintisi-sorgulama",
+        wait_until="domcontentloaded",
+        timeout=180000
+    )
 
-        print("Sayfa başlığı:", page.title())
+    print(page.title())
 
-        page.screenshot(path="bedas.png", full_page=True)
-
-        browser.close()
-
-if __name__ == "__main__":
-    main()
+    browser.close()
